@@ -12,6 +12,25 @@ dotenv.config({ path : './config/config.env' });
 // Load database
 connectDB()
 
+// Add Queue
+
+const addToQueue = (req, res, next) => {
+    console.log(req.url);
+
+    const action = req.url.split("/")[4]
+
+    const reqArr = [];
+
+    const filter = ['deposit', 'withdrawl', 'send'];
+    if(filter.indexOf(action) > -1) {
+        console.log("New One comming")
+        reqArr.push(req);
+    }
+
+    req.queue = reqArr;
+    next();
+}
+
 // Routes files
 const authRoute = require('./route/auth');
 const transactionRoute = require('./route/transaction');
@@ -28,18 +47,7 @@ if(process.env.NODE_ENV === 'developpement'){
 };
 
 // Mounting Route
-app.use((req, res, next) => {
-    console.log(req.url);
-
-    const action = req.url.split("/")[4]
-    const reqArr = [];
-
-    const filter = ['deposit', 'withdrawl', 'send'];
-    if(filter.indexOf(action) > -1) {
-        reqArr.push(req);
-    }
-    next();
-});
+app.use(addToQueue);
 
 app.use('/api/v1/auth', authRoute);
 app.use('/api/v1/account', transactionRoute);

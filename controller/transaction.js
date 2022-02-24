@@ -21,6 +21,7 @@ exports.getAccount = asyncHandler(async (req, res, next) => {
 // @route     POST /api/v1/account/deposit
 // @access    Private
 exports.makeDeposit = asyncHandler(async (req, res, next) => {
+    console.log(req.queue.length);
     const from = typeof(req.body.from) == 'string' ? req.body.from : false;
     const amount = typeof(req.body.amount) == 'number' && req.body.amount > 1 ? req.body.amount : false;
     const user = req.user;
@@ -33,10 +34,14 @@ exports.makeDeposit = asyncHandler(async (req, res, next) => {
     account.balance += amount;
     account.logLastOperation("Deposit", amount, from);
 
-    res.status(200).json({
-        success: true,
-        data : account
-    })
+    setTimeout(() => {
+        res.status(200).json({
+            success: true,
+            data : account
+        })
+    }, 5000);
+
+    
 });
 
 // @desc      withdrawl 
@@ -57,10 +62,12 @@ exports.makeWithdrawl = asyncHandler(async (req, res, next) => {
     account.balance -= amount;
     account.logLastOperation("Withdrawl", amount, from);
 
-    res.status(200).json({
-        success: true,
-        data : account
-    })
+    setTimeout(() => {
+        res.status(200).json({
+            success: true,
+            data : account
+        })
+    }, 7000);
 });
 
 // @desc      Send Money 
